@@ -1,0 +1,287 @@
+[
+  {
+    "id": "tab_tugas",
+    "type": "tab",
+    "label": "Tugas Mandiri P10 - Relay dan PWM",
+    "disabled": false,
+    "info": ""
+  },
+  {
+    "id": "broker_tugas",
+    "type": "mqtt-broker",
+    "name": "Mosquitto Lokal",
+    "broker": "localhost",
+    "port": "1883",
+    "clientid": "NodeRED-Tugas-2410020103",
+    "autoConnect": true,
+    "usetls": false,
+    "protocolVersion": "4",
+    "keepalive": "60",
+    "cleansession": true
+  },
+  {
+    "id": "ui_tab_tugas",
+    "type": "ui_tab",
+    "name": "Tugas Mandiri P10",
+    "icon": "dashboard",
+    "order": 2,
+    "disabled": false,
+    "hidden": false
+  },
+  {
+    "id": "grp_mon",
+    "type": "ui_group",
+    "name": "Monitoring",
+    "tab": "ui_tab_tugas",
+    "order": 1,
+    "disp": true,
+    "width": "6",
+    "collapse": false
+  },
+  {
+    "id": "grp_ctl",
+    "type": "ui_group",
+    "name": "Kontrol",
+    "tab": "ui_tab_tugas",
+    "order": 2,
+    "disp": true,
+    "width": "6",
+    "collapse": false
+  },
+  {
+    "id": "in_suhu",
+    "type": "mqtt in",
+    "z": "tab_tugas",
+    "name": "Suhu (iot/NIM/sensor/suhu)",
+    "topic": "iot/2410020103/sensor/suhu",
+    "qos": "0",
+    "datatype": "auto",
+    "broker": "broker_tugas",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 190,
+    "y": 80,
+    "wires": [
+      [
+        "fn_suhu"
+      ]
+    ]
+  },
+  {
+    "id": "fn_suhu",
+    "type": "function",
+    "z": "tab_tugas",
+    "name": "Parse Float",
+    "func": "msg.payload = parseFloat(msg.payload);\nreturn msg;",
+    "outputs": 1,
+    "noerr": 0,
+    "x": 420,
+    "y": 80,
+    "wires": [
+      [
+        "gauge_suhu"
+      ]
+    ]
+  },
+  {
+    "id": "gauge_suhu",
+    "type": "ui_gauge",
+    "z": "tab_tugas",
+    "name": "Suhu",
+    "group": "grp_mon",
+    "order": 1,
+    "width": "6",
+    "height": "4",
+    "gtype": "gage",
+    "title": "Suhu (°C)",
+    "label": "°C",
+    "format": "{{value}}",
+    "min": 0,
+    "max": 50,
+    "colors": [
+      "#00b500",
+      "#e6e600",
+      "#ca3838"
+    ],
+    "seg1": "",
+    "seg2": "",
+    "x": 630,
+    "y": 80,
+    "wires": []
+  },
+  {
+    "id": "sw_relay",
+    "type": "ui_switch",
+    "z": "tab_tugas",
+    "name": "Kontrol Relay",
+    "label": "Relay (GPIO 26)",
+    "tooltip": "ON/OFF relay",
+    "group": "grp_ctl",
+    "order": 1,
+    "width": "6",
+    "height": "1",
+    "passthru": false,
+    "decouple": "false",
+    "topic": "iot/2410020103/aktuator/relay",
+    "topicType": "str",
+    "style": "",
+    "onvalue": "ON",
+    "onvalueType": "str",
+    "onicon": "",
+    "oncolor": "",
+    "offvalue": "OFF",
+    "offvalueType": "str",
+    "officon": "",
+    "offcolor": "",
+    "animate": false,
+    "className": "",
+    "x": 170,
+    "y": 180,
+    "wires": [
+      [
+        "out_relay"
+      ]
+    ]
+  },
+  {
+    "id": "out_relay",
+    "type": "mqtt out",
+    "z": "tab_tugas",
+    "name": "Perintah Relay",
+    "topic": "",
+    "qos": "0",
+    "retain": "false",
+    "respTopic": "",
+    "contentType": "",
+    "userProps": "",
+    "correl": "",
+    "expiry": "",
+    "broker": "broker_tugas",
+    "x": 420,
+    "y": 180,
+    "wires": []
+  },
+  {
+    "id": "sl_pwm",
+    "type": "ui_slider",
+    "z": "tab_tugas",
+    "name": "Slider PWM",
+    "label": "PWM LED (GPIO 2)",
+    "tooltip": "Kecerahan 0-255",
+    "group": "grp_ctl",
+    "order": 2,
+    "width": "6",
+    "height": "1",
+    "passthru": false,
+    "outs": "end",
+    "topic": "iot/2410020103/aktuator/pwm",
+    "topicType": "str",
+    "min": 0,
+    "max": 255,
+    "step": 1,
+    "className": "",
+    "x": 180,
+    "y": 260,
+    "wires": [
+      [
+        "out_pwm"
+      ]
+    ]
+  },
+  {
+    "id": "out_pwm",
+    "type": "mqtt out",
+    "z": "tab_tugas",
+    "name": "Perintah PWM",
+    "topic": "",
+    "qos": "0",
+    "retain": "false",
+    "respTopic": "",
+    "contentType": "",
+    "userProps": "",
+    "correl": "",
+    "expiry": "",
+    "broker": "broker_tugas",
+    "x": 420,
+    "y": 260,
+    "wires": []
+  },
+  {
+    "id": "in_st_relay",
+    "type": "mqtt in",
+    "z": "tab_tugas",
+    "name": "Status Relay (feedback)",
+    "topic": "iot/2410020103/status/relay",
+    "qos": "0",
+    "datatype": "auto",
+    "broker": "broker_tugas",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 190,
+    "y": 340,
+    "wires": [
+      [
+        "txt_relay"
+      ]
+    ]
+  },
+  {
+    "id": "txt_relay",
+    "type": "ui_text",
+    "z": "tab_tugas",
+    "group": "grp_ctl",
+    "order": 3,
+    "width": "6",
+    "height": "1",
+    "name": "Status Relay",
+    "label": "Status Relay",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "className": "",
+    "x": 430,
+    "y": 340,
+    "wires": []
+  },
+  {
+    "id": "in_st_pwm",
+    "type": "mqtt in",
+    "z": "tab_tugas",
+    "name": "Status PWM (feedback)",
+    "topic": "iot/2410020103/status/pwm",
+    "qos": "0",
+    "datatype": "auto",
+    "broker": "broker_tugas",
+    "nl": false,
+    "rap": true,
+    "rh": 0,
+    "inputs": 0,
+    "x": 190,
+    "y": 400,
+    "wires": [
+      [
+        "txt_pwm"
+      ]
+    ]
+  },
+  {
+    "id": "txt_pwm",
+    "type": "ui_text",
+    "z": "tab_tugas",
+    "group": "grp_ctl",
+    "order": 4,
+    "width": "6",
+    "height": "1",
+    "name": "Status PWM",
+    "label": "Nilai PWM",
+    "format": "{{msg.payload}}",
+    "layout": "row-spread",
+    "className": "",
+    "x": 430,
+    "y": 400,
+    "wires": []
+  }
+]
